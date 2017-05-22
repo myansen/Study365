@@ -1,0 +1,72 @@
+1.GenericServlet:
+	1).是一个Servlet.是Servlet接口和ServletConfig接口的实现类，但是一个抽象类.其中的Service方法为抽象方法
+	2).如果新建的Servlet程序直接继承GenericServlet会使开发更简洁.
+		具体实现： 
+			(1)在GenericServlet中声明了一个ServletConfig类型的成员变量,在init（ServletConfig)方法中对其进行了初始化
+			(2)利用servletConfig成员变量的方法实现了ServletConfig接口的方法
+			(3)还定义了一个init（）方法,在这个init（ServletConfig)方法中对其进行调用，子类可以直接覆盖init()在其中实现对Servlet的初始化
+*			(4)不建议直接覆盖init（ServletConfig),因为如果忘记了编写super(ServletConfig)，而还是用了ServletConfig()接口的方法，则会出现空指针异常.
+			(5)新建的init(){}方法并非Servlet的生命周期方法.而init(ServletConfig)是声明周期相关的方法.
+
+*2.HttpServlet:
+	1).是一个Servlet,继承自GenericServlet.针对HTTP协议所定制.
+	2).在Service()方法中直接把ServletRequest和ServletResponse转为HttpServletRequest和HttpServletResponse
+		并调用了重载的service(HttpServletRequest,HttpServletResponse)
+		在service(HttpServletRequest，HttpServletResponse)获取了请求方式：request.getMethod().根据请求方式又创建了
+		doXxx()方法（xxx为具体实现的方式，比如doGet和doPost
+*	3).实际开发中，直接继承HttpServlet，并根据请求方式腹泻doXxx()方法和接口.(主要是doGet,doPost)
+	4).好处：直接由针对性的覆盖doXxx()方法;直接使用HttpServletRequest和HttpServletResponse，不再需要强转.
+
+			
+public abstract class GenericServlet implements Servlet ,ServletConfig{
+	/** 以下方法为Servlet 接口的方法 **/
+	@Override
+	public void destroy() {
+	}
+ 
+	@Override
+	public ServletConfig getServletConfig() {
+		return servletConfig;
+	}
+
+	@Override
+	public String getServletInfo() {
+		return null;
+	}
+	private ServletConfig servletConfig;
+	@Override
+	public void init(ServletConfig arg0) throws ServletException {
+		servletConfig=arg0;
+		init();
+	}
+
+	public void init() throws ServletException{
+		
+		
+	}
+	
+	@Override
+	public abstract void service(ServletRequest arg0, ServletResponse arg1) throws ServletException, IOException ;
+
+	/** 以下方法为ServletConfig 接口的方法 **/
+	@Override
+	public String getInitParameter(String arg0) {
+		return servletConfig.getInitParameter(arg0);
+	}
+
+	@Override
+	public Enumeration<String> getInitParameterNames() {
+		return servletConfig.getInitParameterNames();
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		return servletConfig.getServletContext();
+	}
+
+	@Override
+	public String getServletName() {
+		return servletConfig.getServletName();
+	}
+}
+			
